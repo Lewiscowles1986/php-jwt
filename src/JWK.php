@@ -2,9 +2,9 @@
 
 namespace Firebase\JWT;
 
-use DomainException;
-use InvalidArgumentException;
-use UnexpectedValueException;
+use Firebase\JWT\Exceptions\DomainException;
+use Firebase\JWT\Exceptions\InvalidArgumentException;
+use Firebase\JWT\Exceptions\UnexpectedValueException;
 
 /**
  * JSON Web Key implementation, based on this spec:
