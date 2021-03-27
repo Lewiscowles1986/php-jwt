@@ -1,23 +1,11 @@
 <?php
-namespace Firebase\JWT;
+namespace Tests;
 
 use ArrayObject;
-use PHPUnit\Framework\TestCase;
+use Firebase\JWT\JWT;
 
-class JWTTest extends TestCase
+class JWTTest extends BaseTestCase
 {
-    /*
-     * For compatibility with PHPUnit 4.8 and PHP < 5.6
-     */
-    public function setExpectedException($exceptionName, $message = '', $code = null)
-    {
-        if (method_exists($this, 'expectException')) {
-            $this->expectException($exceptionName);
-        } else {
-            parent::setExpectedException($exceptionName, $message, $code);
-        }
-    }
-
     public function testEncodeDecode()
     {
         $msg = JWT::encode('abc', 'my_key');
