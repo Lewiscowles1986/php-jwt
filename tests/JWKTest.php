@@ -2,8 +2,8 @@
 
 namespace Tests;
 
-use Firebase\JWT\JWK;
-use Firebase\JWT\JWT;
+use JWT\JWK;
+use JWT\JWT;
 
 class JWKTest extends BaseTestCase
 {
@@ -12,14 +12,14 @@ class JWKTest extends BaseTestCase
     private static $privKey2;
     public function testMissingKty()
     {
-        $this->setExpectedException('Firebase\JWT\Exceptions\UnexpectedValueException', 'JWK must contain a "kty" parameter');
+        $this->setExpectedException('JWT\Exceptions\UnexpectedValueException', 'JWK must contain a "kty" parameter');
         $badJwk = array('kid' => 'foo');
         $keys = JWK::parseKeySet(array('keys' => array($badJwk)));
     }
 
     public function testInvalidAlgorithm()
     {
-        $this->setExpectedException('Firebase\JWT\Exceptions\UnexpectedValueException', 'No supported algorithms found in JWK Set');
+        $this->setExpectedException('JWT\Exceptions\UnexpectedValueException', 'No supported algorithms found in JWK Set');
         $badJwk = array('kty' => 'BADALG');
         $keys = JWK::parseKeySet(array('keys' => array($badJwk)));
     }
@@ -35,13 +35,13 @@ class JWKTest extends BaseTestCase
 
     public function testParseJwkKeyEmpty()
     {
-        $this->setExpectedException('Firebase\JWT\Exceptions\InvalidArgumentException', 'JWK must not be empty');
+        $this->setExpectedException('JWT\Exceptions\InvalidArgumentException', 'JWK must not be empty');
         JWK::parseKeySet(array('keys' => array(array())));
     }
 
     public function testParseJwkKeySetEmpty()
     {
-        $this->setExpectedException('Firebase\JWT\Exceptions\InvalidArgumentException', 'JWK Set did not contain any keys');
+        $this->setExpectedException('JWT\Exceptions\InvalidArgumentException', 'JWK Set did not contain any keys');
         JWK::parseKeySet(array('keys' => array()));
     }
 
@@ -53,7 +53,7 @@ class JWKTest extends BaseTestCase
         $privKey1 = file_get_contents(__DIR__ . '/rsa1-private.pem');
         $payload = array('exp' => strtotime('-1 hour'));
         $msg = JWT::encode($payload, $privKey1, 'RS256', 'jwk1');
-        $this->setExpectedException('Firebase\JWT\Exceptions\ExpiredException');
+        $this->setExpectedException('JWT\Exceptions\ExpiredException');
         JWT::decode($msg, self::$keys, array('RS256'));
     }
 

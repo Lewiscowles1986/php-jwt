@@ -1,18 +1,18 @@
 <?php
 
-namespace Firebase\JWT;
+namespace JWT;
 
 use DateTime;
-use Firebase\JWT\ASN\DerConverter;
-use Firebase\JWT\Exceptions\DomainException;
-use Firebase\JWT\Exceptions\InvalidArgumentException;
-use Firebase\JWT\Exceptions\UnexpectedValueException;
-use Firebase\JWT\Exceptions\SignatureInvalidException;
-use Firebase\JWT\Exceptions\BeforeValidException;
-use Firebase\JWT\Exceptions\ExpiredException;
-use Firebase\JWT\Utils\Base64UrlSafeConverter;
-use Firebase\JWT\Utils\JsonConverter;
-use Firebase\JWT\Utils\StringUtils;
+use JWT\ASN\DerConverter;
+use JWT\Exceptions\DomainException;
+use JWT\Exceptions\InvalidArgumentException;
+use JWT\Exceptions\UnexpectedValueException;
+use JWT\Exceptions\SignatureInvalidException;
+use JWT\Exceptions\BeforeValidException;
+use JWT\Exceptions\ExpiredException;
+use JWT\Utils\Base64UrlSafeConverter;
+use JWT\Utils\JsonConverter;
+use JWT\Utils\StringUtils;
 
 /**
  * JSON Web Token implementation, based on this spec:

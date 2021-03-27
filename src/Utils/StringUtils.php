@@ -1,6 +1,6 @@
 <?php
 
-namespace Firebase\JWT\Utils;
+namespace JWT\Utils;
 
 class StringUtils
 {

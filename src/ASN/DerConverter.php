@@ -1,6 +1,6 @@
 <?php
 
-namespace Firebase\JWT\ASN;
+namespace JWT\ASN;
 
 class DerConverter
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Firebase\JWT\Exceptions;
+namespace JWT\Exceptions;
 
 class ValidationException extends RuntimeException
 {
