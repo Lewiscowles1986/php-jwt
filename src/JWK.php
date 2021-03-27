@@ -5,6 +5,7 @@ namespace Firebase\JWT;
 use Firebase\JWT\Exceptions\DomainException;
 use Firebase\JWT\Exceptions\InvalidArgumentException;
 use Firebase\JWT\Exceptions\UnexpectedValueException;
+use Firebase\JWT\Utils\Base64UrlSafeConverter;
 
 /**
  * JSON Web Key implementation, based on this spec:
@@ -115,8 +116,8 @@ class JWK
      */
     private static function createPemFromModulusAndExponent($n, $e)
     {
-        $modulus = JWT::urlsafeB64Decode($n);
-        $publicExponent = JWT::urlsafeB64Decode($e);
+        $modulus = Base64UrlSafeConverter::decode($n);
+        $publicExponent = Base64UrlSafeConverter::decode($e);
 
         $components = array(
             'modulus' => \pack('Ca*a*', 2, self::encodeLength(\strlen($modulus)), $modulus),
