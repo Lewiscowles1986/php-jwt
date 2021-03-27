@@ -10,6 +10,9 @@ use Firebase\JWT\Exceptions\UnexpectedValueException;
 use Firebase\JWT\Exceptions\SignatureInvalidException;
 use Firebase\JWT\Exceptions\BeforeValidException;
 use Firebase\JWT\Exceptions\ExpiredException;
+use Firebase\JWT\Utils\Base64UrlSafeConverter;
+use Firebase\JWT\Utils\JsonConverter;
+use Firebase\JWT\Utils\StringUtils;
 
 /**
  * JSON Web Token implementation, based on this spec:
@@ -84,13 +87,13 @@ class JWT
             throw new UnexpectedValueException('Wrong number of segments');
         }
         list($headb64, $bodyb64, $cryptob64) = $tks;
-        if (null === ($header = static::jsonDecode(static::urlsafeB64Decode($headb64)))) {
+        if (null === ($header = JsonConverter::decode(Base64UrlSafeConverter::decode($headb64)))) {
             throw new UnexpectedValueException('Invalid header encoding');
         }
-        if (null === $payload = static::jsonDecode(static::urlsafeB64Decode($bodyb64))) {
+        if (null === $payload = JsonConverter::decode(Base64UrlSafeConverter::decode($bodyb64))) {
             throw new UnexpectedValueException('Invalid claims encoding');
         }
-        if (false === ($sig = static::urlsafeB64Decode($cryptob64))) {
+        if (false === ($sig = Base64UrlSafeConverter::decode($cryptob64))) {
             throw new UnexpectedValueException('Invalid signature encoding');
         }
         if (empty($header->alg)) {
@@ -174,12 +177,12 @@ class JWT
             $header = \array_merge($head, $header);
         }
         $segments = array();
-        $segments[] = static::urlsafeB64Encode(static::jsonEncode($header));
-        $segments[] = static::urlsafeB64Encode(static::jsonEncode($payload));
+        $segments[] = Base64UrlSafeConverter::encode(JsonConverter::encode($header));
+        $segments[] = Base64UrlSafeConverter::encode(JsonConverter::encode($payload));
         $signing_input = \implode('.', $segments);
 
         $signature = static::sign($signing_input, $key, $alg);
-        $segments[] = static::urlsafeB64Encode($signature);
+        $segments[] = Base64UrlSafeConverter::encode($signature);
 
         return \implode('.', $segments);
     }
@@ -257,137 +260,15 @@ class JWT
                 if (\function_exists('hash_equals')) {
                     return \hash_equals($signature, $hash);
                 }
-                $len = \min(static::safeStrlen($signature), static::safeStrlen($hash));
+                $len = \min(StringUtils::safeStrlen($signature), StringUtils::safeStrlen($hash));
 
                 $status = 0;
                 for ($i = 0; $i < $len; $i++) {
                     $status |= (\ord($signature[$i]) ^ \ord($hash[$i]));
                 }
-                $status |= (static::safeStrlen($signature) ^ static::safeStrlen($hash));
+                $status |= (StringUtils::safeStrlen($signature) ^ StringUtils::safeStrlen($hash));
 
                 return ($status === 0);
         }
-    }
-
-    /**
-     * Decode a JSON string into a PHP object.
-     *
-     * @param string $input JSON string
-     *
-     * @return object Object representation of JSON string
-     *
-     * @throws DomainException Provided string was invalid JSON
-     */
-    public static function jsonDecode($input)
-    {
-        if (\version_compare(PHP_VERSION, '5.4.0', '>=') && !(\defined('JSON_C_VERSION') && PHP_INT_SIZE > 4)) {
-            /** In PHP >=5.4.0, json_decode() accepts an options parameter, that allows you
-             * to specify that large ints (like Steam Transaction IDs) should be treated as
-             * strings, rather than the PHP default behaviour of converting them to floats.
-             */
-            $obj = \json_decode($input, false, 512, JSON_BIGINT_AS_STRING);
-        } else {
-            /** Not all servers will support that, however, so for older versions we must
-             * manually detect large ints in the JSON string and quote them (thus converting
-             *them to strings) before decoding, hence the preg_replace() call.
-             */
-            $max_int_length = \strlen((string) PHP_INT_MAX) - 1;
-            $json_without_bigints = \preg_replace('/:\s*(-?\d{' . $max_int_length . ',})/', ': "$1"', $input);
-            $obj = \json_decode($json_without_bigints);
-        }
-
-        if ($errno = \json_last_error()) {
-            static::handleJsonError($errno);
-        } elseif ($obj === null && $input !== 'null') {
-            throw new DomainException('Null result with non-null input');
-        }
-        return $obj;
-    }
-
-    /**
-     * Encode a PHP object into a JSON string.
-     *
-     * @param object|array $input A PHP object or array
-     *
-     * @return string JSON representation of the PHP object or array
-     *
-     * @throws DomainException Provided object could not be encoded to valid JSON
-     */
-    public static function jsonEncode($input)
-    {
-        $json = \json_encode($input);
-        if ($errno = \json_last_error()) {
-            static::handleJsonError($errno);
-        } elseif ($json === 'null' && $input !== null) {
-            throw new DomainException('Null result with non-null input');
-        }
-        return $json;
-    }
-
-    /**
-     * Decode a string with URL-safe Base64.
-     *
-     * @param string $input A Base64 encoded string
-     *
-     * @return string A decoded string
-     */
-    public static function urlsafeB64Decode($input)
-    {
-        $remainder = \strlen($input) % 4;
-        if ($remainder) {
-            $padlen = 4 - $remainder;
-            $input .= \str_repeat('=', $padlen);
-        }
-        return \base64_decode(\strtr($input, '-_', '+/'));
-    }
-
-    /**
-     * Encode a string with URL-safe Base64.
-     *
-     * @param string $input The string you want encoded
-     *
-     * @return string The base64 encode of what you passed in
-     */
-    public static function urlsafeB64Encode($input)
-    {
-        return \str_replace('=', '', \strtr(\base64_encode($input), '+/', '-_'));
-    }
-
-    /**
-     * Helper method to create a JSON error.
-     *
-     * @param int $errno An error number from json_last_error()
-     *
-     * @return void
-     */
-    private static function handleJsonError($errno)
-    {
-        $messages = array(
-            JSON_ERROR_DEPTH => 'Maximum stack depth exceeded',
-            JSON_ERROR_STATE_MISMATCH => 'Invalid or malformed JSON',
-            JSON_ERROR_CTRL_CHAR => 'Unexpected control character found',
-            JSON_ERROR_SYNTAX => 'Syntax error, malformed JSON',
-            JSON_ERROR_UTF8 => 'Malformed UTF-8 characters' //PHP >= 5.3.3
-        );
-        throw new DomainException(
-            isset($messages[$errno])
-            ? $messages[$errno]
-            : 'Unknown JSON error: ' . $errno
-        );
-    }
-
-    /**
-     * Get the number of bytes in cryptographic strings.
-     *
-     * @param string $str
-     *
-     * @return int
-     */
-    private static function safeStrlen($str)
-    {
-        if (\function_exists('mb_strlen')) {
-            return \mb_strlen($str, '8bit');
-        }
-        return \strlen($str);
     }
 }
