@@ -1,8 +1,8 @@
 <?php
 
-namespace Firebase\JWT\Utils;
+namespace JWT\Utils;
 
-use Firebase\JWT\Exceptions\DomainException;
+use JWT\Exceptions\DomainException;
 
 class JsonConverter
 {

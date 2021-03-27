@@ -1,11 +1,11 @@
 <?php
 
-namespace Firebase\JWT;
+namespace JWT;
 
-use Firebase\JWT\Exceptions\DomainException;
-use Firebase\JWT\Exceptions\InvalidArgumentException;
-use Firebase\JWT\Exceptions\UnexpectedValueException;
-use Firebase\JWT\Utils\Base64UrlSafeConverter;
+use JWT\Exceptions\DomainException;
+use JWT\Exceptions\InvalidArgumentException;
+use JWT\Exceptions\UnexpectedValueException;
+use JWT\Utils\Base64UrlSafeConverter;
 
 /**
  * JSON Web Key implementation, based on this spec:
