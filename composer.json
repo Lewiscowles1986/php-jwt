@@ -20,7 +20,10 @@
     ],
     "license": "BSD-3-Clause",
     "require": {
-        "php": ">=7.0"
+        "php": ">=7.0",
+        "ext-hash": "*",
+        "ext-json": "*",
+        "ext-openssl": "*"
     },
     "scripts": {
         "test": "phpunit",
