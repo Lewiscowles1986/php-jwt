@@ -4,6 +4,7 @@ namespace Tests;
 
 use ArrayObject;
 use Firebase\JWT\JWT;
+use Firebase\JWT\Utils\JsonConverter;
 
 class JWTTest extends BaseTestCase
 {
@@ -34,7 +35,7 @@ class JWTTest extends BaseTestCase
     public function testMalformedJsonThrowsException()
     {
         $this->setExpectedException('Firebase\JWT\Exceptions\DomainException');
-        JWT::jsonDecode('this is not valid JSON string');
+        JsonConverter::decode('this is not valid JSON string');
     }
 
     public function testExpiredToken()
