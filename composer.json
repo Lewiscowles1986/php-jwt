@@ -25,6 +25,9 @@
         "ext-json": "*",
         "ext-openssl": "*"
     },
+    "suggest": {
+        "ext-mbstring": "*"
+    },
     "scripts": {
         "test": "phpunit",
         "coverage": "phpunit --coverage-html=coverage",
