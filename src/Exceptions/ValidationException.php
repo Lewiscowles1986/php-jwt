@@ -2,7 +2,7 @@
 
 namespace Firebase\JWT\Exceptions;
 
-class ValidationException extends LogicException
+class ValidationException extends RuntimeException
 {
 
 }

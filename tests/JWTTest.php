@@ -280,7 +280,7 @@ class JWTTest extends BaseTestCase
     public function testInvalidSignatureEncoding()
     {
         $msg = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwibmFtZSI6ImZvbyJ9.Q4Kee9E8o0Xfo4ADXvYA8t7dN_X_bU9K5w6tXuiSjlUxx";
-        $this->setExpectedException('Firebase\JWT\Exceptions\SignatureInvalidException');
+        $this->setExpectedException('Firebase\JWT\Exceptions\RuntimeException');
         JWT::decode($msg, 'secret', array('HS256'));
     }
 
