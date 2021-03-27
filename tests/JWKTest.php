@@ -1,9 +1,10 @@
 <?php
-namespace Firebase\JWT;
+namespace Tests;
 
-use PHPUnit\Framework\TestCase;
+use Firebase\JWT\JWK;
+use Firebase\JWT\JWT;
 
-class JWKTest extends TestCase
+class JWKTest extends BaseTestCase
 {
     private static $keys;
     private static $privKey1;
@@ -97,20 +98,5 @@ class JWKTest extends TestCase
         $result = JWT::decode($msg, self::$keys, array('RS256'));
 
         $this->assertEquals("bar", $result->sub);
-    }
-
-    /*
-     * For compatibility with PHPUnit 4.8 and PHP < 5.6
-     */
-    public function setExpectedException($exceptionName, $message = '', $code = null)
-    {
-        if (method_exists($this, 'expectException')) {
-            $this->expectException($exceptionName);
-            if ($message) {
-                $this->expectExceptionMessage($message);
-            }
-        } else {
-            parent::setExpectedException($exceptionName, $message, $code);
-        }
     }
 }
